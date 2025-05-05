@@ -1,0 +1,65 @@
+services:
+  # manager:
+  #   build: ./manager
+  #   container_name : manager
+  #   ports:
+  #     - "5000:5000"
+  #   networks:
+  #     - crackhash-network
+
+  client:
+    build: ./client
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    networks:
+      - crackhash-network
+
+  manager:
+    build: ./new_manager
+    container_name : manager
+    ports:
+      - "8080:8080"
+    networks:
+      - crackhash-network
+    volumes:
+    - ./new_manager:/app
+    
+ 
+  worker1:
+    build: ./worker
+    container_name : worker1
+    environment:
+      - WORKER_NAME=worker1
+      - PORT=8081
+    ports:
+      - "8081:8081"
+    networks:
+      - crackhash-network
+  
+  worker2:
+    build: ./worker
+    container_name : worker2
+    environment:
+      - WORKER_NAME=worker2
+      - PORT=8082
+    ports:
+      - "8082:8082"
+    networks:
+      - crackhash-network
+  
+  worker3:
+    build: ./worker
+    container_name : worker3
+    environment:
+      - WORKER_NAME=worker3
+      - PORT=8083
+    ports:
+      - "8083:8083"
+    networks:
+      - crackhash-network
+
+    
+networks:
+  crackhash-network:
+    driver : bridge
