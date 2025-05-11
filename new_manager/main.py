@@ -16,9 +16,6 @@ async def main():
     app.on_startup.append(manager.start_execution_requests)
     app.on_startup.append(manager.fill_queue_form_file)
     
-    # app.on_shutdown.append(manager.on_cleanup)
-    # app.on_cleanup.append(manager.on_cleanup)
-
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, 'manager', 8080)

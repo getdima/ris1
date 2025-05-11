@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CrackHash</title>
+</head>
+<body>
+    <h1>Добро пожаловать в сервис CrackHash</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+    <table>
+        {{ create_form }}
+        <button type="submit" name="create_request">Создать запрос</button>
+    </table>
+   
+    <br />
+
+    <form method="POST">
+        {% csrf_token %}
+    <table>
+        {{ check_form }}
+        <button type="submit" name="check_status">Проверить статус</button>
+    </table>
+    
+    <br />
+
+    <button type="submit" name="check_workers">Получить данные по воркерам</button>
+
+    <h1>{{header}}</h1>
+    <h1>{{body}}</h1>
+    <h2>{{result}}</h2>
+    {% for item in progress %}
+    <tr>
+        <h2>{{item}}</h2>
+    </tr>
+    {% endfor %}
+</body>
+</body>
+</html>

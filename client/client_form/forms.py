@@ -1,11 +1,8 @@
 from django import forms
  
 class RequestForm(forms.Form):
-    hash = forms.CharField()
-    maxLength = forms.IntegerField(min_value=1)
+    hash = forms.CharField(required=False)
+    maxLength = forms.IntegerField(min_value=1, required=False)
 
 class RequestStatusForm(forms.Form):
-    request = forms.CharField()
-
-class WorkerProgressForm(forms.Form):
-    worker = forms.IntegerField(min_value=0)
+    request = forms.CharField(required=False)
