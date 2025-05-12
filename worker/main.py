@@ -2,19 +2,19 @@ import asyncio
 import os
 from aiohttp import web
 from worker import Worker
+from config import *
 
-manager_url = 'http://manager:8080'
 
 async def main():
-    worker = Worker(manager_url)
+    worker = Worker(MANAGER_URL)
 
-    worker_port = os.getenv("PORT")
-    worker_name = os.getenv("WORKER_NAME")
+    worker_port = os.getenv(WORKER_PORT_ENV_PATH)
+    worker_name = os.getenv(WORKER_NAME_ENV_PATH)
 
     app = web.Application()
-    app.add_routes([web.post('/internal/api/worker/hash/crack/task', worker.handle_execute)])
-    app.add_routes([web.get('/healthcheck', worker.handle_healthcheck)])
-    app.add_routes([web.get('/progress', worker.handle_progress)])
+    app.add_routes([web.post(WORKER_CRACK_TASK_PATH, worker.handle_execute)])
+    app.add_routes([web.get(WORKER_HEALTH_CHECK_PATH, worker.handle_healthcheck)])
+    app.add_routes([web.get(WORKER_PROGRESS_PATH, worker.handle_progress)])
 
     runner = web.AppRunner(app)
     await runner.setup()

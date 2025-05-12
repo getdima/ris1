@@ -7,6 +7,8 @@ from hashlib import md5
 import xml.etree.ElementTree as ET
 import aiohttp
 import requests
+from config import *
+
 
 class WorkerExecuter:
     def __init__ (self, manager_url) :
@@ -83,7 +85,7 @@ class WorkerExecuter:
         xml_data = ET.tostring(root).decode()
         headers = {'Content-Type': 'application/xml'}
 
-        response = requests.patch(f"{self.manager_url}/internal/api/manager/hash/crack/request", data=xml_data, headers=headers)
+        response = requests.patch(f"{self.manager_url}{MANAGER_PATCH_PATH}", data=xml_data, headers=headers)
 
         self.curr_number = 0
         self.total = 0

@@ -10,6 +10,8 @@ from . import forms
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 
+from config import *
+
 #При использовании параметров строки запроса, они получаются внутри функции-представления с помощью метода request.GET.get()
 # def user(request):
 #     id = request.GET.get("id", 10)
@@ -21,26 +23,6 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 # Вернет текст "Hello World"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-def check_worker_progress(request):
-    response = requests.get("http://manager:8080/workerProgress")
-
-    response = response.json()
-
-    if (response['error_code'] != "") :
-        data = {
-            "header" : response['error_message'],
-        }
-    else :
-        data = {
-            "header" : "Текущий статус воркеров",
-            "progress" : response['data']
-        }
-    
-    data["create_form"] = forms.RequestForm()
-    data["check_form"] = forms.RequestStatusForm()
-
-    return HttpResponseRedirect(f"/crackhash/home/", data)
 
 def all_in_one(request):
     if request.method == "POST":
@@ -55,7 +37,7 @@ def all_in_one(request):
 
             # print("Сообщение в консоль", file=sys.stderr)
 
-            response = requests.post("http://manager:8080/api/hash/crack", json=params)  
+            response = requests.post(f"{MANAGER_URL}{CRACK_MANAGER_PATH}", json=params)  
             
             response = response.json()
             
@@ -81,7 +63,7 @@ def all_in_one(request):
                 'request_id': request_id
             }
 
-            response = requests.get("http://manager:8080/api/hash/status", params=params)
+            response = requests.get(f"{MANAGER_URL}{REQUEST_STATUS_PATH}", params=params)
 
             response = response.json()
 
@@ -103,7 +85,7 @@ def all_in_one(request):
 
             return TemplateResponse(request, "index_all_in_one.html", data)
         elif 'check_workers' in request.POST:
-            response = requests.get("http://manager:8080/workerProgress")
+            response = requests.get(f"{MANAGER_URL}{ALL_WORKER_PROGRESS_PATH}")
 
             response = response.json()
 

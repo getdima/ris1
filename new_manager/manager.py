@@ -1,15 +1,13 @@
 import asyncio
 from enum import Enum
 import json
-import os
-import sys
 import uuid
 from aiohttp import ClientSession, web
 import aiohttp
 from aiologger.loggers.json import JsonLogger
 import xml.etree.ElementTree as ET
-from sqlalchemy import JSON
 
+from config import *
 from jsonFileManager import JSONFileManager
 
 logger = JsonLogger.with_default_handlers(
@@ -83,7 +81,7 @@ class Manager:
     def __init__ (self, worker_urls, alplabet) :
         self.worker_urls = worker_urls
         self.workers_count = len(worker_urls)
-        self.json_manager = JSONFileManager('resourses/dataBase.json', 'resourses/dataQueue.json')
+        self.json_manager = JSONFileManager(JSON_BASE_PATH, JSON_QUEUE_PATH)
         self.requests_base = RequestsBase(self.json_manager)
         self.queue = asyncio.Queue(100)
         self.alplabet = alplabet
@@ -272,7 +270,7 @@ class Manager:
     async def task_health_check(self, config, session):
         url = config['url']
         try:
-            async with session.get(f"{url}/healthcheck", timeout = 10) as response:
+            async with session.get(f"{url}{WORKER_HEALTH_CHECK_PATH}", timeout = 10) as response:
                 return 'OK'
         except asyncio.TimeoutError:
             return f"Request to {url} timed out"
@@ -282,7 +280,7 @@ class Manager:
     async def task_crack_hash(self, config, session):
         url = config['url']
         try:
-            async with session.post(f"{url}/internal/api/worker/hash/crack/task", json=config, timeout = 600) as response:
+            async with session.post(f"{url}{WORKER_CRACK_TASK_PATH}", json=config, timeout = 600) as response:
                 return "OK"
         except asyncio.TimeoutError:
             return f"Request to {url} timed out"
@@ -291,7 +289,7 @@ class Manager:
     
     async def task_get_progress(self, config, session):
         try:
-            async with session.get(f"{config['url']}/progress") as response:
+            async with session.get(f"{config['url']}{WORKER_PROGRESS_PATH}") as response:
                 data = await response.text()
                 return f'{config['part_number']}: {data}'
         except asyncio.TimeoutError:

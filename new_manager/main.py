@@ -1,24 +1,23 @@
 import asyncio
 from aiohttp import web
 from manager import Manager
+from config import *
 
-worker_urls = ['http://worker1:8081', 'http://worker2:8082', 'http://worker3:8083']
-alplabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
 
 async def main():
-    manager = Manager(worker_urls, alplabet)
+    manager = Manager(WORKER_URLS, ALPHABET)
     app = web.Application()
-    app.add_routes([web.post('/api/hash/crack', manager.handle_make_request)])
-    app.add_routes([web.get('/api/hash/status', manager.handle_check_request)])
-    app.add_routes([web.patch('/internal/api/manager/hash/crack/request', manager.handle_patch_request)])
-    app.add_routes([web.get('/workerProgress', manager.handle_worker_progress)])
+    app.add_routes([web.post(CRACK_MANAGER_PATH, manager.handle_make_request)])
+    app.add_routes([web.get(REQUEST_STATUS_PATH, manager.handle_check_request)])
+    app.add_routes([web.patch(MANAGER_PATCH_PATH, manager.handle_patch_request)])
+    app.add_routes([web.get(ALL_WORKER_PROGRESS_PATH, manager.handle_worker_progress)])
 
     app.on_startup.append(manager.start_execution_requests)
     app.on_startup.append(manager.fill_queue_form_file)
     
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, 'manager', 8080)
+    site = web.TCPSite(runner, MANAGER_HOST, MANAGER_PORT)
     await site.start()
 
     while True:
